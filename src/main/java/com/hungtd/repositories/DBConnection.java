@@ -1,9 +1,7 @@
-package com.hungtd.repository;
+package com.hungtd.repositories;
 
 
-import java.sql.Connection;
-import java.sql.DriverManager;
-import java.sql.SQLException;
+import java.sql.*;
 
 /**
  * Created by hungtd
@@ -32,5 +30,33 @@ public class DBConnection {
             }
         }
         return instance;
+    }
+
+    private static void setParameters(PreparedStatement stmt, Object... params) throws SQLException {
+        for (int i = 0; i < params.length; i++) {
+            stmt.setObject(i + 1, params[i]);
+        }
+    }
+
+    public ResultSet executeQuery(String query, Object... params) {
+        try {
+            PreparedStatement stmt = connection.prepareStatement(query);
+            setParameters(stmt, params);
+            return stmt.executeQuery();
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+        return null;
+    }
+
+    public int executeUpdate(String query, Object... params) {
+        try  {
+            PreparedStatement stmt = connection.prepareStatement(query);
+            setParameters(stmt, params);
+            return stmt.executeUpdate();
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+        return -1;
     }
 }

@@ -1,4 +1,4 @@
-package com.hungtd.entity;
+package com.hungtd.entities;
 
 
 import java.io.Serializable;

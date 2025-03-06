@@ -1,6 +1,9 @@
 package com.hungtd.entities;
 
 
+import java.sql.ResultSet;
+import java.sql.SQLException;
+
 /**
  * Created by hungtd
  * Date: 06/03/2025
@@ -8,14 +11,21 @@ package com.hungtd.entities;
  * for all issues, contact me: hungtd2180@gmail.com
  */
 
-public class ToolEntity extends IdEntity{
+public class Tool extends IdEntity{
     private String name;
     private String description;
     private String url;
     private Boolean active;
 
-    public ToolEntity() {}
+    public Tool() {}
 
+    public Tool(ResultSet rs) throws SQLException {
+        setId(rs.getLong("id"));
+        setName(rs.getString("name"));
+        setDescription(rs.getString("description"));
+        setUrl(rs.getString("url"));
+        setActive(rs.getBoolean("active"));
+    }
     public String getName() {
         return name;
     }
