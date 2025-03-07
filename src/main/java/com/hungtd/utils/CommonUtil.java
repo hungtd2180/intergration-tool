@@ -17,16 +17,23 @@ import java.util.List;
 public class CommonUtil {
     public static String getPropertyName (Class<?> clazz){
         Field[] fields  = clazz.getDeclaredFields();
-        List<String> propertyNames = new ArrayList<String>();
+        List<String> propertyNames = new ArrayList<>();
         for (Field field : fields){
-            propertyNames.add(field.getName());
+            propertyNames.add(field.getType().getSimpleName());
         }
-        String propertyName = propertyNames.toString().replace('[', '(');
-        return propertyName.replace(']', ')');
-
+        return convertListToValue(propertyNames);
     }
 
+    public static String convertListToValue (List<String> list) {
+        String value = list.toString().replace('[', '(');
+        return value.replace(']', ')');
+    }
     public static void main(String[] args) {
+//        List<String> test = new ArrayList<>();
+//        test.add("name");
+//        test.add("description");
+//        test.add("url");
+//        System.out.println(convertListToValue(test));
         System.out.println(getPropertyName(Tool.class));
     }
 }

@@ -3,9 +3,12 @@ package com.hungtd.repositories;
 
 import com.hungtd.entities.IdEntity;
 
+import java.lang.reflect.Field;
 import java.sql.ResultSet;
 import java.util.ArrayList;
 import java.util.List;
+
+import static com.hungtd.utils.CommonUtil.*;
 
 /**
  * Created by hungtd
@@ -50,5 +53,59 @@ public class CustomRepository<T extends IdEntity> {
 
         }
         return entities;
+    }
+
+    public Boolean create(T entity){
+    // Implement logic to create a new entity
+        createTable();
+        StringBuilder stmt = new StringBuilder("INSERT INTO " + entityClass.getSimpleName() + " " + getPropertyName(entityClass) + " VALUES ");
+        List<String> placeholders = new ArrayList<>();
+        List<Object> values = new ArrayList<>();
+        for (Field field : entityClass.getDeclaredFields()) {
+            field.setAccessible(true);
+            placeholders.add("?");
+            try {
+                values.add(field.get(entity));
+            } catch (IllegalAccessException e) {
+                e.printStackTrace();
+                return false;
+            }
+        }
+        stmt.append(convertListToValue(placeholders));
+        return dbConnection.executeUpdate(stmt.toString(), values.toArray()) > 0;
+    }
+
+    public void createTable () {
+        // Implement logic to create a new entity
+        StringBuilder stmt = new StringBuilder("CREATE TABLE IF NOT EXISTS " + entityClass.getSimpleName() + " ");
+        Field[] fields = entityClass.getDeclaredFields();
+        List<String> values = new ArrayList<>();
+        values.add("id INT PRIMARY KEY AUTO_INCREMENT");
+        for (Field field : fields){
+            switch (field.getType().getSimpleName()) {
+                case "String":
+                    values.add(field.getName() + " VARCHAR(255)");
+                    break;
+                case "Long":
+                    values.add(field.getName() + " BIGINT");
+                    break;
+                case "Integer":
+                    values.add(field.getName() + " INT");
+                    break;
+                case "Double":
+                    values.add(field.getName() + " DOUBLE");
+                    break;
+                case "Float":
+                    values.add(field.getName() + " FLOAT");
+                    break;
+                case "Boolean":
+                    values.add(field.getName() + " BOOLEAN");
+                    break;
+                default:
+                    break;
+            }
+        }
+        stmt.append(convertListToValue(values));
+        dbConnection.executeUpdate(stmt.toString());
     }
 }
